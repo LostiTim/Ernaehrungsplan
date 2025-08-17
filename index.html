@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Mein Ernährungsplan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      margin: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #ffffff;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px;
+      cursor: pointer;
+      text-align: center;
+      background: #2a2a2a;
+      border-radius: 6px 6px 0 0;
+      margin: 0 2px;
+      color: #bbb;
+    }
+    .tab.active {
+      background: #3a3a3a;
+      color: #fff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .day-checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 15px;
+    }
+    label {
+      cursor: pointer;
+    }
+    .meals, .shopping {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #2a2a2a;
+    }
+    ul {
+      padding-left: 0;
+      list-style: none;
+    }
+    li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+    }
+    li input {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍴 Ernährungsplan</h1>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="openTab('dayplan')">📅 Tagesplan</div>
+      <div class="tab" onclick="openTab('shoppinglist')">🛒 Einkaufsliste</div>
+    </div>
+
+    <!-- Tab: Tagesplan -->
+    <div id="dayplan" class="tab-content active">
+      <label for="day">Wähle einen Tag:</label>
+      <select id="day" onchange="showPlan()">
+        <option value="">-- bitte auswählen --</option>
+        <option value="montag">Montag</option>
+        <option value="dienstag">Dienstag</option>
+        <option value="mittwoch">Mittwoch</option>
+        <option value="donnerstag">Donnerstag</option>
+        <option value="freitag">Freitag</option>
+        <option value="samstag">Samstag</option>
+        <option value="sonntag">Sonntag</option>
+      </select>
+      <div id="output"></div>
+    </div>
+
+    <!-- Tab: Einkaufsliste -->
+    <div id="shoppinglist" class="tab-content">
+      <h2>Wähle Tage:</h2>
+      <div class="day-checkboxes">
+        <label><input type="checkbox" value="montag" onchange="updateShoppingList()"> Montag</label>
+        <label><input type="checkbox" value="dienstag" onchange="updateShoppingList()"> Dienstag</label>
+        <label><input type="checkbox" value="mittwoch" onchange="updateShoppingList()"> Mittwoch</label>
+        <label><input type="checkbox" value="donnerstag" onchange="updateShoppingList()"> Donnerstag</label>
+        <label><input type="checkbox" value="freitag" onchange="updateShoppingList()"> Freitag</label>
+        <label><input type="checkbox" value="samstag" onchange="updateShoppingList()"> Samstag</label>
+        <label><input type="checkbox" value="sonntag" onchange="updateShoppingList()"> Sonntag</label>
+      </div>
+      <div id="shopping-output"></div>
+    </div>
+  </div>
+
+  <script>
+    const plan = {
+      montag: {
+        meals: [
+          "Frühstück: Haferflocken mit Milch, Banane und Nüssen",
+          "Mittag: Vollkornnudeln mit Putenstreifen und Gemüse",
+          "Snack: Apfel und Mandeln",
+          "Abend: Rührei mit Vollkornbrot und Gurkenscheiben"
+        ],
+        shopping: ["Haferflocken","Milch","Banane","Nüsse","Vollkornnudeln","Putenstreifen","Gemüse","Apfel","Mandeln","Eier","Vollkornbrot","Gurke"]
+      },
+      dienstag: {
+        meals: [
+          "Frühstück: Vollkornbrot mit Käse und Paprika",
+          "Mittag: Reis mit Lachs und Brokkoli",
+          "Snack: Naturjoghurt mit Beeren",
+          "Abend: Hähnchenwrap mit Salat, Mais und Paprika"
+        ],
+        shopping: ["Vollkornbrot","Käse","Paprika","Reis","Lachs","Brokkoli","Naturjoghurt","Beeren","Hähnchenbrust","Wraps","Salat","Mais"]
+      },
+      mittwoch: {
+        meals: [
+          "Frühstück: Quark mit Honig und Haferflocken",
+          "Mittag: Kartoffeln mit Spinat und Ei",
+          "Snack: Gemüsesticks mit Hummus",
+          "Abend: Chili con Carne mit Reis"
+        ],
+        shopping: ["Quark","Honig","Haferflocken","Kartoffeln","Spinat","Eier","Gemüse","Hummus","Hackfleisch","Kidneybohnen","Tomatensauce","Reis"]
+      },
+      donnerstag: {
+        meals: [
+          "Frühstück: Omelette mit Zwiebeln und Paprika",
+          "Mittag: Couscous-Salat mit Kichererbsen und Mozzarella",
+          "Snack: Birne und Walnüsse",
+          "Abend: Hähnchenbrust mit Ofengemüse"
+        ],
+        shopping: ["Eier","Zwiebel","Paprika","Couscous","Kichererbsen","Mozzarella","Gemüse","Birne","Walnüsse","Hähnchenbrust"]
+      },
+      freitag: {
+        meals: [
+          "Frühstück: Müsli mit Milch und Apfel",
+          "Mittag: Vollkornnudeln mit Thunfisch und Tomatensauce",
+          "Snack: Eiweißriegel",
+          "Abend: Garnelen mit Reis und Gemüse"
+        ],
+        shopping: ["Müsli","Milch","Apfel","Vollkornnudeln","Thunfisch","Tomatensauce","Eiweißriegel","Garnelen","Reis","Gemüse"]
+      },
+      samstag: {
+        meals: [
+          "Frühstück: Vollkornbrötchen mit Käse und Ei",
+          "Mittag: Rindergeschnetzeltes mit Paprika und Reis",
+          "Snack: Banane und Kürbiskerne",
+          "Abend: Wraps mit Gemüse und Hähnchen"
+        ],
+        shopping: ["Vollkornbrötchen","Eier","Käse","Rindergeschnetzeltes","Paprika","Reis","Banane","Kürbiskerne","Wraps","Hähnchenbrust","Gemüse"]
+      },
+      sonntag: {
+        meals: [
+          "Frühstück: Pfannkuchen mit Beeren und Quark",
+          "Mittag: Hähnchencurry mit Reis und Gemüse",
+          "Snack: Obstsalat",
+          "Abend: Vollkornbrot mit Käse, Schinken und Gemüse"
+        ],
+        shopping: ["Hafermehl","Eier","Beeren","Quark","Hähnchenbrust","Curry-Gewürz","Reis","Gemüse","Obst","Vollkornbrot","Käse","Schinken"]
+      }
+    };
+
+    // Speicher für abgehakte Items
+    let checkedItems = JSON.parse(localStorage.getItem('checkedItems')) || [];
+
+    function openTab(tabId) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      document.querySelector(`.tab[onclick="openTab('${tabId}')"]`).classList.add("active");
+      document.getElementById(tabId).classList.add("active");
+      if(tabId === 'shoppinglist') updateShoppingList(); 
+    }
+
+    function showPlan() {
+      const day = document.getElementById("day").value;
+      const output = document.getElementById("output");
+      if (!day || !plan[day]) {
+        output.innerHTML = "";
+        return;
+      }
+      const { meals, shopping } = plan[day];
+      output.innerHTML = `
+        <div class="meals">
+          <h2>Mahlzeiten</h2>
+          <ul>${meals.map(m => `<li>${m}</li>`).join("")}</ul>
+        </div>
+        <div class="shopping">
+          <h2>Einkaufsliste</h2>
+          <ul>${shopping.map(item => `
+            <li>
+              <input type='checkbox' ${checkedItems.includes(item) ? "checked" : ""} onchange='toggleItem(this)'> ${item}
+            </li>`).join("")}</ul>
+        </div>
+      `;
+    }
+
+    function updateShoppingList() {
+      const checkedDays = Array.from(document.querySelectorAll('#shoppinglist input[type="checkbox"]:checked')).map(cb => cb.value);
+      let items = [];
+      checkedDays.forEach(day => {
+        if(plan[day]) items = items.concat(plan[day].shopping);
+      });
+      const uniqueItems = [...new Set(items)];
+      document.getElementById("shopping-output").innerHTML = `
+        <div class="shopping">
+          <h2>Gesamte Einkaufsliste</h2>
+          <ul>${uniqueItems.map(item => `
+            <li>
+              <input type='checkbox' ${checkedItems.includes(item) ? "checked" : ""} onchange='toggleItem(this)'> ${item}
+            </li>`).join("")}</ul>
+        </div>
+      `;
+    }
+
+    function toggleItem(checkbox) {
+      const item = checkbox.nextSibling.textContent.trim();
+      if(checkbox.checked) {
+        if(!checkedItems.includes(item)) checkedItems.push(item);
+      } else {
+        checkedItems = checkedItems.filter(i => i !== item);
+      }
+      localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+      checkbox.parentElement.remove();
+    }
+
+    window.onload = () => {
+      if(document.getElementById("day").value) showPlan();
+    };
+  </script>
+</body>
+</html>
